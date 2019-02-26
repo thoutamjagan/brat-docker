@@ -35,6 +35,9 @@ VOLUME /bratcfg
 ADD brat_install_wrapper.sh /usr/bin/brat_install_wrapper.sh
 RUN chmod +x /usr/bin/brat_install_wrapper.sh
 
+#This tells brat that a DB with the name "Wiki" is set up for normalization and provides links to the homepage and online term lookup that will be shown in the brat UI.
+COPY tools.conf /var/www/brat/brat-v1.3_Crunchy_Frog/
+
 # Make sure apache can access it
 RUN chown -R www-data:www-data /var/www/brat/brat-v1.3_Crunchy_Frog/
 
@@ -44,13 +47,6 @@ RUN pip install git+git://github.com/vitalco/simstring-python-package#egg=simstr
 
 # add the user patching script
 ADD user_patch.py /var/www/brat/brat-v1.3_Crunchy_Frog/user_patch.py
-
-#Change Working DIR
-WORKDIR /var/www/brat/brat-v1.3_Crunchy_Frog
-#initiate Wiki DATABASE
-RUN python tools/norm_db_init.py example-data/normalisation/Wiki.txt
-#This tells brat that a DB with the name "Wiki" is set up for normalization and provides links to the homepage and online term lookup that will be shown in the brat UI.
-COPY tools.conf /var/www/brat/brat-v1.3_Crunchy_Frog/
 
 # Enable cgi
 RUN a2enmod cgi

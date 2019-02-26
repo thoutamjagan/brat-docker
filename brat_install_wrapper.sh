@@ -8,6 +8,9 @@ EOD
 
 chown -R www-data:www-data /bratdata
 
+#initiate Wiki DATABASE
+python tools/norm_db_init.py example-data/normalisation/Wiki.txt
+
 # patch the user config with more users
 python /var/www/brat/brat-v1.3_Crunchy_Frog/user_patch.py
 

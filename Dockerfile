@@ -2,6 +2,11 @@
 FROM ubuntu
 MAINTAINER Cass Johnston <cassjohnston@gmail.com>
 
+
+ARG BRAT_USERNAME=jagan
+ARG BRAT_PASSWORD=Password@879
+ARG BRAT_EMAIL=jaganthoutam@gmail.com
+
 # set users cfg file
 ARG USERS_CFG=users.json
 

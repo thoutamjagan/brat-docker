@@ -9,10 +9,10 @@ ARG USERS_CFG=users.json
 RUN apt-get update
 RUN apt-get install -y curl vim sudo wget rsync
 RUN apt-get install -y apache2
-RUN apt-get install -y python3
-RUN apt-get install -y python3-pip
-RUN pip3 install --upgrade pip
+RUN apt-get install -y python
+RUN apt-get install -y python-pip
 RUN apt-get install -y supervisor
+RUN apt-get install -y git
 RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -29,8 +29,8 @@ RUN ln -s /bratdata /var/www/brat/brat-v1.3_Crunchy_Frog/data
 RUN ln -s /bratcfg /var/www/brat/brat-v1.3_Crunchy_Frog/cfg 
 
 # And make that location a volume
-#VOLUME /bratdata
-#VOLUME /bratcfg
+VOLUME /bratdata
+VOLUME /bratcfg
 
 ADD brat_install_wrapper.sh /usr/bin/brat_install_wrapper.sh
 RUN chmod +x /usr/bin/brat_install_wrapper.sh
@@ -40,10 +40,17 @@ RUN chown -R www-data:www-data /var/www/brat/brat-v1.3_Crunchy_Frog/
 
 ADD 000-default.conf /etc/apache2/sites-available/000-default.conf
 
-RUN pip3 install git+git://github.com/vitalco/simstring-python-package#egg=simstring
+RUN pip install git+git://github.com/vitalco/simstring-python-package#egg=simstring
 
 # add the user patching script
 ADD user_patch.py /var/www/brat/brat-v1.3_Crunchy_Frog/user_patch.py
+
+#Change Working DIR
+WORKDIR /var/www/brat/brat-v1.3_Crunchy_Frog
+#initiate Wiki DATABASE
+RUN python tools/norm_db_init.py example-data/normalisation/Wiki.txt
+#This tells brat that a DB with the name "Wiki" is set up for normalization and provides links to the homepage and online term lookup that will be shown in the brat UI.
+COPY tools.conf /var/www/brat/brat-v1.3_Crunchy_Frog/
 
 # Enable cgi
 RUN a2enmod cgi
@@ -57,8 +64,4 @@ RUN mkdir -p /var/log/supervisor
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf 
 
 CMD ["/usr/bin/supervisord"]
-
-
-
-
 
